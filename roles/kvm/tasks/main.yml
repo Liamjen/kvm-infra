@@ -1,0 +1,29 @@
+---
+  # install kvm packages
+- name: install kvm and dependencies
+  apt: update_cache=yes name={{ item }} state=present
+  with_items:
+   - qemu-kvm
+   - libvirt-bin
+   - ubuntu-vm-builder
+   - bridge-utils
+   - virtinst
+   - ovmf
+   - qemu-utils
+
+# enable IOMMU
+# update grub
+- name: Update grub file
+  copy: src={{ kvm_dir }}/grub dest=/etc/default/grub owner=root group=root mode=644
+  notify: ['Update GRUB']
+
+# update initramfs-tools modules
+- name: Update initramfs-tools/modules
+  copy: src={{ kvm_dir }}/initramfs-modules dest=/etc/initramfs-tools/modules owner=root group=root mode=644
+  notify: ['Update initramfs-tools']
+
+# setup vfio modules
+- name: Create modprobe.d/local.conf
+  template: src=modules-local.conf.j2 dest=/etc/modprobe.d/local.conf owner=root group=root mode=644
+
+# setup startup.nsh script

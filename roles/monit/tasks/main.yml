@@ -1,0 +1,9 @@
+---
+- name: install monit
+  apt: update_cache=yes name={{ item }} state=present
+  with_items:
+   - monit
+
+- name: Create monitrc file
+  template: src=monitrc.j2 dest=/etc/monit/monitrc owner=root group=root mode=600
+  notify: ['Reload monit']

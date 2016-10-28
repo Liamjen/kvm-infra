@@ -1,0 +1,9 @@
+# the master playbook for a physical host
+- name: Setup a physical host from scratch
+  hosts: all
+  sudo: yes
+  roles:
+  - common
+  - kvm
+  - monit
+  - postfix

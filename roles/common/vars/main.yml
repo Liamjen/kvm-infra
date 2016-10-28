@@ -1,0 +1,3 @@
+password: # hash of the password, 512 
+users:
+- username: johndoe

@@ -1,0 +1,27 @@
+---
+- name: ensure admin group exists
+  group: name=admin state=present
+
+- name: give admin group passwordless sudo
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^%admin'
+    line: '%admin ALL=(ALL:ALL) NOPASSWD:ALL'
+
+- name: create users and add to admin group
+  user: name={{ item.username }} password={{ password }} shell=/bin/bash groups=admin
+  with_items: '{{users}}'
+#  user: name=cale shell=/bin/bash groups=admin
+
+- name: setup user ssh keys
+  authorized_key: user={{ item.username }} key={{ lookup('file', '~/infrastructure/ssh-keys/{{ item.username }}_rsa.pub') }} path=/home/{{ item.username }}/.ssh/authorized_keys manage_dir=no
+  with_items: '{{users}}'
+
+#- name: force password reset on login
+#  command: chage -d 0 {{ item.username }}
+#  with_items: '{{users}}'
+
+# - name: setup ssh
+# - name: install system wide pacakages
+
